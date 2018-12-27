@@ -12,10 +12,11 @@ CC := clang
 CURRENT_RUN := getting-started-shaders.exe
 
 all: gltest.exe glbasic.exe gldraw.exe \
-	getting-started-shaders.exe
+	gss-ex1.exe \
+	gss-ex2.exe
 
 run: all
-	getting-started-shaders.exe
+	gss-ex2.exe
 
 gltest.exe: gltest.c
 	clang -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
@@ -26,7 +27,10 @@ glbasic.exe: glbasic.c glad.o
 gldraw.exe: gldraw.c glad.o
 	clang -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
 
-getting-started-shaders.exe: getting-started-shaders.cpp glad.o
+gss-ex1.exe: gss-ex1-getting-started-shaders.cpp glad.o
+	clang++ -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
+
+gss-ex2.exe: gss-ex2-getting-started-shaders.cpp glad.o
 	clang++ -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
 
 glad.o: glad.c
