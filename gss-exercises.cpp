@@ -21,9 +21,10 @@ const unsigned int SCR_HEIGHT = 600;
 
 const char *vertexShaderSource ="#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "uniform vec2 offset;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x, -aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = vec4(aPos.x + offset.x, -aPos.y + offset.y, aPos.z, 1.0);\n"
     "}\0";
 
 const char *fragmentShaderSource = "#version 330 core\n"
@@ -166,6 +167,11 @@ int main()
         float redValue = sin(timeValue * 13.f / 5.f ) / 2.0f + 0.5f;
         int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
+
+        int offsetLoc = glGetUniformLocation(shaderProgram, "offset");
+        float x_diff = sin(timeValue * 17.f / 5.f ) / 2.0f;
+        float y_diff = sin(timeValue * 19.f / 5.f ) / 2.0f;
+        glUniform2f(offsetLoc, x_diff, y_diff);
 
         // render the triangle
         glDrawArrays(GL_TRIANGLES, 0, 3);
