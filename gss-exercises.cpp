@@ -1,3 +1,11 @@
+/* Exercises:
+ * 1: invert the triangle
+ * 2: move the triangle via the use of uniforms
+ * 3: output vertex position to fragment shader and use for color
+ *
+ * I'm going to try to do these one at a time until I have an example that does
+ * all of them.
+ */
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -15,7 +23,7 @@ const char *vertexShaderSource ="#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos, 1.0);\n"
+    "   gl_Position = vec4(aPos.x, -aPos.y, aPos.z, 1.0);\n"
     "}\0";
 
 const char *fragmentShaderSource = "#version 330 core\n"
