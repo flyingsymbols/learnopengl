@@ -21,18 +21,21 @@ const unsigned int SCR_HEIGHT = 600;
 
 const char *vertexShaderSource ="#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
+    "out vec2 xyloc;\n"
     "uniform vec2 offset;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = vec4(aPos.x + offset.x, -aPos.y + offset.y, aPos.z, 1.0);\n"
+    "   xyloc = vec2(aPos.x + offset.x, -aPos.y + offset.y);\n"
+    "   gl_Position = vec4(xyloc, aPos.z, 1.0);\n"
     "}\0";
 
 const char *fragmentShaderSource = "#version 330 core\n"
     "out vec4 FragColor;\n"
+    "in vec2 xyloc;\n"
     "uniform vec4 ourColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = ourColor;\n"
+    "   FragColor = vec4(ourColor.x + xyloc.x, ourColor.y + xyloc.y, ourColor.z, ourColor.w);\n"
     "}\n\0";
 
 int main()
