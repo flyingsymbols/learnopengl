@@ -15,10 +15,17 @@ all: gltest.exe glbasic.exe gldraw.exe \
 	gss-ex1.exe \
 	gss-ex2.exe \
 	gss-test1.exe \
-	gss-exercises.exe
+	gss-exercises.exe \
+	gs-textures.exe
 
 run: all
 	gss-exercises.exe
+
+gs-textures.exe: gs-textures.cpp stb_image.o glad.o
+	clang++ -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
+
+stb_image.o: stb_image.cpp
+	clang -c -o $@ ${INCDIRS} $^
 
 gss-exercises.exe: gss-exercises.cpp glad.o
 	clang++ -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
