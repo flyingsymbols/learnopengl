@@ -123,10 +123,12 @@ int main()
     //   has 0 or 1 element buffer objects, which contain indices
     unsigned int VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
 
-    glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // the last parameter fo glBufferData is a enum for usage, to hint the
     // driver about where to store the buffer:
@@ -134,7 +136,6 @@ int main()
     // GL_STATIC_READ, GL_STATIC_COPY, GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
@@ -165,7 +166,6 @@ int main()
     if (load_image("textures/container.jpg", &gl_tex_id)){
         return -1;
     }
-    glBindTexture(GL_TEXTURE_2D, gl_tex_id);
 
     // render loop
     // -----------
@@ -186,13 +186,14 @@ int main()
         // buffers are COLOR, DEPTH, ACCUM, STENCIL
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glBindTexture(GL_TEXTURE_2D, gl_tex_id);
+
         // be sure to activate the shader before any calls to glUniform
         ourShader.use();
 
         // render the rectangle
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
