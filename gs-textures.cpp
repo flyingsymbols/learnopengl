@@ -6,11 +6,13 @@
  * I'm going to try to do these one at a time until I have an example that does
  * all of them.
  */
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-
 #include <iostream>
 #include <cmath>
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include "stb_image.h"
+
 #include "shader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -19,6 +21,45 @@ void processInput(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
+int load_image(const char * path, unsigned int * out_gl_tex_id) {
+    int width, height, channels;
+    unsigned char * data = stbi_load(
+        path, 
+        &width, &height, &channels,
+        0 // unused param for desired number of channels
+    );
+
+    if (data) {
+        // TODO: figure out how error handling in opengl 
+        // is supposed to work
+        unsigned int gl_tex_id;
+        glGenTextures(1, &gl_tex_id);
+        glBindTexture(GL_TEXTURE_2D, gl_tex_id);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D, 
+            0, //mipmap level
+            GL_RGB, // storage format
+            width, height, // width and height of the image
+            0, // legacy?
+            GL_RGB, GL_UNSIGNED_BYTE, data //input format and data
+        );
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        stbi_image_free(data);
+
+        *out_gl_tex_id = gl_tex_id;
+        return 0;
+    } else {
+        std::cout << "Failed to load texture" << std::endl;
+        return 1;
+    }
+}
 
 int main()
 {
@@ -58,22 +99,58 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-         0.0f,  0.5f, 0.0f   // top 
+        // positions          // colors           // texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
     };
+    unsigned int indices[] = {  // note that we start from 0!
+        0, 1, 3,   // first triangle
+        1, 2, 3    // second triangle
+    };  
 
-    unsigned int VBO, VAO;
+    // What's the relation between the following three things:
+    // Vertex Buffer Object (VBO)
+    // Vertex Array Object (VAO)
+    // Element Buffer Object (EBO)
+    //
+    // it seems like it's something like
+    // VAO:
+    //   has 1-16 attribute pointers, each having type, offset, stride
+    //    * the attribute pointers point into the VBO, which is more like a
+    //      direct data buffer
+    //   has 0 or 1 element buffer objects, which contain indices
+    unsigned int VAO, VBO, EBO;
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
 
+    glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // the last parameter fo glBufferData is a enum for usage, to hint the
+    // driver about where to store the buffer:
+    // GL_STREAM_DRAW, GL_STREAM_READ, GL_STREAM_COPY, GL_STATIC_DRAW, 
+    // GL_STATIC_READ, GL_STATIC_COPY, GL_DYNAMIC_DRAW, GL_DYNAMIC_READ, or GL_DYNAMIC_COPY
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    size_t offset = 0;
+    unsigned int stride = (3 + 3 + 2) * sizeof(float);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*) offset);
     glEnableVertexAttribArray(0);
+    offset += 3 * sizeof(float);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*) offset);
+    glEnableVertexAttribArray(1);
+    offset += 3 * sizeof(float);
+
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void *) offset);
+    glEnableVertexAttribArray(2);
+    offset += 2 * sizeof(float);
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
@@ -84,6 +161,11 @@ int main()
     // just bind it beforehand before rendering the respective triangle; this is another approach.
     glBindVertexArray(VAO);
 
+    unsigned int gl_tex_id;
+    if (load_image("textures/container.jpg", &gl_tex_id)){
+        return -1;
+    }
+    glBindTexture(GL_TEXTURE_2D, gl_tex_id);
 
     // render loop
     // -----------
@@ -107,24 +189,9 @@ int main()
         // be sure to activate the shader before any calls to glUniform
         ourShader.use();
 
-        // update shader uniform
-        float timeValue = glfwGetTime();
-        float greenValue = sin(timeValue * 7.f / 5.f) / 2.0f + 0.5f;
-        float blueValue = sin(timeValue * 11.f / 5.f ) / 2.0f + 0.5f;
-        float redValue = sin(timeValue * 13.f / 5.f ) / 2.0f + 0.5f;
-        ourShader.setVec4(
-            "ourColor", 
-            redValue, greenValue, blueValue, 1.0f
-        );
-
-        float x_diff = sin(timeValue * 17.f / 5.f ) / 2.0f;
-        float y_diff = sin(timeValue * 19.f / 5.f ) / 2.0f;
-        ourShader.setVec2(
-            "offset",
-            x_diff, y_diff
-        );
-
-        // render the triangle
+        // render the rectangle
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
