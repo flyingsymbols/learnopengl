@@ -22,8 +22,16 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-int load_image(const char * path, unsigned int * out_gl_tex_id) {
+int load_image(const char * path, 
+    unsigned int * out_gl_tex_id, 
+    unsigned int input_channels=GL_RGB,
+    bool flip_vertical=false
+) {
     int width, height, channels;
+
+    // flip vertically if necessary
+    stbi_set_flip_vertically_on_load(flip_vertical);
+
     unsigned char * data = stbi_load(
         path, 
         &width, &height, &channels,
@@ -47,7 +55,7 @@ int load_image(const char * path, unsigned int * out_gl_tex_id) {
             GL_RGB, // storage format
             width, height, // width and height of the image
             0, // legacy?
-            GL_RGB, GL_UNSIGNED_BYTE, data //input format and data
+            input_channels, GL_UNSIGNED_BYTE, data //input format and data
         );
         glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -162,10 +170,20 @@ int main()
     // just bind it beforehand before rendering the respective triangle; this is another approach.
     glBindVertexArray(VAO);
 
-    unsigned int gl_tex_id;
-    if (load_image("textures/container.jpg", &gl_tex_id)){
+    unsigned int door_tex_id, face_tex_id;
+    if (load_image("textures/container.jpg", &door_tex_id)){
         return -1;
     }
+
+    if (load_image("textures/awesomeface.png", &face_tex_id, GL_RGBA, true)){
+        return -1;
+    }
+
+    // be sure to activate the shader before any calls to glUniform
+    // (TODO: what happens if we don't?)
+    ourShader.use();
+    ourShader.setInt("texture1", 0);
+    ourShader.setInt("texture2", 1);
 
     // render loop
     // -----------
@@ -186,10 +204,10 @@ int main()
         // buffers are COLOR, DEPTH, ACCUM, STENCIL
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glBindTexture(GL_TEXTURE_2D, gl_tex_id);
-
-        // be sure to activate the shader before any calls to glUniform
-        ourShader.use();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, door_tex_id);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, face_tex_id);
 
         // render the rectangle
         glBindVertexArray(VAO);
