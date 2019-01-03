@@ -32,7 +32,11 @@ const unsigned int SCR_HEIGHT = 600;
 int load_image(const char * path, 
     unsigned int * out_gl_tex_id, 
     unsigned int input_channels=GL_RGB,
-    bool flip_vertical=false
+    bool flip_vertical=false,
+    unsigned int s_tex_wrap = GL_REPEAT,
+    unsigned int t_tex_wrap = GL_REPEAT,
+    unsigned int tex_min_filter = GL_LINEAR,
+    unsigned int tex_mag_filter = GL_LINEAR
 ) {
     int width, height, channels;
 
@@ -52,8 +56,8 @@ int load_image(const char * path,
         glGenTextures(1, &gl_tex_id);
         glBindTexture(GL_TEXTURE_2D, gl_tex_id);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, s_tex_wrap);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, t_tex_wrap);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -109,7 +113,7 @@ int main()
         return -1;
     }
 
-    Shader ourShader("gs-textures.vs", "gs-textures.fs");
+    Shader ourShader("gs-tex-exercises.vs", "gs-tex-exercises.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
