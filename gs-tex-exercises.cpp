@@ -182,7 +182,9 @@ int main()
     glBindVertexArray(VAO);
 
     unsigned int door_tex_id, face_tex_id;
-    if (load_image("textures/container.jpg", &door_tex_id)){
+    if (load_image("textures/container.jpg", &door_tex_id, 
+        GL_RGB, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE
+    )){
         return -1;
     }
 

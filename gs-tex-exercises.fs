@@ -9,9 +9,11 @@ uniform sampler2D texture2;
 
 void main()
 {
+    vec2 door_coord = TexCoord * 2 - vec2(.5,.5);
+    vec2 face_coord = vec2(1.0-TexCoord.x, TexCoord.y) * 2;
     FragColor = mix(
-        texture(texture1, TexCoord),
-        texture(texture2, vec2(1.0-TexCoord.x, TexCoord.y)),
+        texture(texture1, door_coord),
+        texture(texture2, face_coord),
         0.2
     ); // * vec4(ourColor, 1.0);
 }
