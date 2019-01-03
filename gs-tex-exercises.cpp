@@ -1,10 +1,17 @@
 /* Exercises:
- * 1: invert the triangle
- * 2: move the triangle via the use of uniforms
- * 3: output vertex position to fragment shader and use for color
- *
- * I'm going to try to do these one at a time until I have an example that does
- * all of them.
+ * 1. Make sure ONLY the happy face looks in the reverse direction
+ *    by changing the fragment shader
+ * 2. Experiment with different texture wrapping methods by 
+ *    specifying tex coords in the range [0,2] instead of [0,1]
+ *    - see if you can display 4 smiley faces on a single container
+ *      image clamped at its edge
+ *    - experiment with other wrapping methods as well
+ * 3. Display only the center pixels of the texture image on the
+ *    rectangle so the individual pixels get visible.
+ * 4. Use a uniform variable as the mix function's third parameter
+ *    to vary the amount the two textures are visible.
+ *    Use up and down arrow keys to change how much the container
+ *    or the smiley face is visible
  */
 #include <iostream>
 #include <cmath>
