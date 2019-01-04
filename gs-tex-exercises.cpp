@@ -23,6 +23,7 @@
 #include "shader.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void key_callback(GLFWwindow * w, int k, int scancode, int action, int mods);
 void processInput(GLFWwindow *window);
 
 // settings
@@ -104,6 +105,7 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetKeyCallback(window, key_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -212,6 +214,7 @@ int main()
         // input
         // -----
         processInput(window);
+        ourShader.setFloat("t", glfwGetTime());
 
         // render
         // ------
@@ -267,4 +270,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+void key_callback(GLFWwindow * w, int k, int scancode, int action, int mods) {
+
 }
