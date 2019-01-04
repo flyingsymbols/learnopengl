@@ -58,8 +58,8 @@ int load_image(const char * path,
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, s_tex_wrap);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, t_tex_wrap);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tex_min_filter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tex_mag_filter);
 
         glTexImage2D(GL_TEXTURE_2D, 
             0, //mipmap level
@@ -181,9 +181,15 @@ int main()
     // just bind it beforehand before rendering the respective triangle; this is another approach.
     glBindVertexArray(VAO);
 
-    unsigned int door_tex_id, face_tex_id;
+    unsigned int door_tex_id, door2_tex_id, face_tex_id;
     if (load_image("textures/container.jpg", &door_tex_id, 
         GL_RGB, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE
+    )){
+        return -1;
+    }
+
+    if (load_image("textures/container.jpg", &door2_tex_id, 
+        GL_RGB, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST
     )){
         return -1;
     }
@@ -197,6 +203,7 @@ int main()
     ourShader.use();
     ourShader.setInt("texture1", 0);
     ourShader.setInt("texture2", 1);
+    ourShader.setInt("texture3", 2);
 
     // render loop
     // -----------
@@ -221,6 +228,8 @@ int main()
         glBindTexture(GL_TEXTURE_2D, door_tex_id);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, face_tex_id);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, door2_tex_id);
 
         // render the rectangle
         glBindVertexArray(VAO);
