@@ -250,8 +250,8 @@ int main()
             // Make a transformation matrix for our vertex shader
             // This one rotates around the center
             glm::mat4 trans = glm::mat4(1.0f);
-            trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(.0,.0,1.));
             trans = glm::translate(trans, glm::vec3(.5, -.5, 0.));
+            trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(.0,.0,1.));
             glUniformMatrix4fv(
                 glGetUniformLocation(ourShader.ID, "transform"),
                 1,

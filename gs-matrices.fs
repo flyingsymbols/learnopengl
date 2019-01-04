@@ -6,6 +6,7 @@ in vec2 TexCoord;
 
 uniform sampler2D texture1;
 uniform sampler2D texture2;
+uniform sampler2D texture3;
 uniform float t;
 uniform float k_val;
 
@@ -19,7 +20,7 @@ void main()
             texture(texture2, face_coord),
             k_val
         ),
-        texture(texture1, door2_coord),
+        texture(texture3, door2_coord),
         sin(t*5)
     ); // * vec4(ourColor, 1.0);
 }
