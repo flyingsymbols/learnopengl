@@ -30,6 +30,9 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+Shader * GLOBAL_SHADER = NULL;
+float GLOBAL_K_VAL = 0.5;
+
 int load_image(const char * path, 
     unsigned int * out_gl_tex_id, 
     unsigned int input_channels=GL_RGB,
@@ -116,6 +119,8 @@ int main()
     }
 
     Shader ourShader("gs-tex-exercises.vs", "gs-tex-exercises.fs");
+
+    GLOBAL_SHADER = &ourShader;
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -215,6 +220,7 @@ int main()
         // -----
         processInput(window);
         ourShader.setFloat("t", glfwGetTime());
+        ourShader.setFloat("k_val", GLOBAL_K_VAL);
 
         // render
         // ------
@@ -272,6 +278,19 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-void key_callback(GLFWwindow * w, int k, int scancode, int action, int mods) {
+#define MAX(a, b) ((a > b) ? (a) : (b))
+#define MIN(a, b) ((a < b) ? (a) : (b))
 
+void key_callback(GLFWwindow * w, int k, int scancode, int action, int mods) {
+    if (action != GLFW_PRESS) return;
+
+    switch (k) {
+        case GLFW_KEY_UP:
+            GLOBAL_K_VAL = MIN(GLOBAL_K_VAL+.125, 1.0);
+            break;
+        case GLFW_KEY_DOWN:
+            GLOBAL_K_VAL = MAX(GLOBAL_K_VAL-.125, 0.0);
+            break;
+    }
+    std::cout << GLOBAL_K_VAL << std::endl;
 }

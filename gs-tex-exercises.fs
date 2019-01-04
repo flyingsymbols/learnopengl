@@ -8,6 +8,7 @@ uniform sampler2D texture1;
 uniform sampler2D texture2;
 uniform sampler2D texture3;
 uniform float t;
+uniform float k_val;
 
 void main()
 {
@@ -17,7 +18,7 @@ void main()
     FragColor = mix(mix(
             texture(texture1, door_coord),
             texture(texture2, face_coord),
-            0.2
+            k_val
         ),
         texture(texture3, door2_coord),
         sin(t*5)
