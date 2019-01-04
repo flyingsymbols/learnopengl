@@ -18,10 +18,16 @@ all: gltest.exe glbasic.exe gldraw.exe \
 	gss-test1.exe \
 	gss-exercises.exe \
 	gs-textures.exe \
-	gs-tex-exercises.exe
+	gs-tex-exercises.exe \
+	gs-matrices.exe
 
 run: all
-	gs-tex-exercises.exe
+	gs-matrices.exe
+
+gs-matrices.exe: gs-matrices.cpp stb_image.o glad.o
+	clang++ ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
+
+gs-matrices.cpp: gs-matrices.vs gs-matrices.fs
 
 gs-tex-exercises.exe: gs-tex-exercises.cpp stb_image.o glad.o
 	clang++ ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
