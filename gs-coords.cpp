@@ -128,11 +128,11 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+        // positions         // texture coords
+         0.5f,  0.5f, 0.0f,  1.0f, 1.0f,   // top right
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,   // bottom left
+        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f    // top left 
     };
     unsigned int indices[] = {  // note that we start from 0!
         0, 1, 3,   // first triangle
@@ -169,17 +169,14 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     size_t offset = 0;
-    unsigned int stride = (3 + 3 + 2) * sizeof(float);
+    unsigned int stride = (3 + 2) * sizeof(float);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*) offset);
     glEnableVertexAttribArray(0);
     offset += 3 * sizeof(float);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*) offset);
-    glEnableVertexAttribArray(1);
-    offset += 3 * sizeof(float);
 
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void *) offset);
-    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void *) offset);
+    glEnableVertexAttribArray(1);
     offset += 2 * sizeof(float);
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
@@ -191,14 +188,8 @@ int main()
     // just bind it beforehand before rendering the respective triangle; this is another approach.
     glBindVertexArray(VAO);
 
-    unsigned int door_tex_id, door2_tex_id, face_tex_id;
+    unsigned int door_tex_id, face_tex_id;
     if (load_image("textures/container.jpg", &door_tex_id, 
-        GL_RGB, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE
-    )){
-        return -1;
-    }
-
-    if (load_image("textures/container.jpg", &door2_tex_id, 
         GL_RGB, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST
     )){
         return -1;
@@ -240,8 +231,6 @@ int main()
         glBindTexture(GL_TEXTURE_2D, door_tex_id);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, face_tex_id);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, door2_tex_id);
 
         // render the rectangle
         glBindVertexArray(VAO);
