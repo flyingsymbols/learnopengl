@@ -273,6 +273,24 @@ int main()
         .1f, 100.f
     );
 
+    glm::vec3 cubePositions[] = {
+      glm::vec3( 0.0f,  0.0f,  0.0f), 
+      glm::vec3( 2.0f,  5.0f, -15.0f), 
+      glm::vec3(-1.5f, -2.2f, -2.5f),  
+      glm::vec3(-3.8f, -2.0f, -12.3f),  
+      glm::vec3( 2.4f, -0.4f, -3.5f),  
+      glm::vec3(-1.7f,  3.0f, -7.5f),  
+      glm::vec3( 1.3f, -2.0f, -2.5f),  
+      glm::vec3( 1.5f,  2.0f, -2.5f), 
+      glm::vec3( 1.5f,  0.2f, -1.5f), 
+      glm::vec3(-1.3f,  1.0f, -1.5f)  
+    };
+    
+// for the below to work, need to have the same name in C++ and the shader
+#define SEND_MAT4(mat_name) ourShader.setMat4(#mat_name, mat_name)
+    SEND_MAT4(view);
+    SEND_MAT4(projection);
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -303,25 +321,20 @@ int main()
         // render the rectangle
         glBindVertexArray(VAO);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(
-            model, 
-            glm::radians(float(glfwGetTime())*50.f),
-            glm::vec3(.5f, 1.f, 0.f)
-        );
+        for (unsigned int i = 0; i < 10; ++i) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i + glfwGetTime() * 50.;
+            model = glm::rotate(
+                model, 
+                glm::radians(angle),
+                glm::vec3(1.f, 0.3f, 0.5f)
+            );
+            SEND_MAT4(model);
 
-// for the below to work, need to have the same name in C++ and the shader
-#define SEND_MAT4(mat_name) glUniformMatrix4fv( \
-    glGetUniformLocation(ourShader.ID, #mat_name), \
-    1, GL_FALSE, glm::value_ptr(mat_name) \
-)
-
-        SEND_MAT4(model);
-        SEND_MAT4(view);
-        SEND_MAT4(projection);
-
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+            // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
