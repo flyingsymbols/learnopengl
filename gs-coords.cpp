@@ -125,6 +125,10 @@ int main()
         return -1;
     }
 
+    // GL mode enabling:
+    glEnable(GL_DEPTH_TEST); // this makes OpenGL do depth testing
+        // which makes nearer faces overwrite further ones, but not vice-versa
+
     Shader ourShader("gs-coords.vs", "gs-coords.fs");
 
     GLOBAL_SHADER = &ourShader;
@@ -288,7 +292,8 @@ int main()
 
         // This clears the buffers indicated with a bitmask
         // buffers are COLOR, DEPTH, ACCUM, STENCIL
-        glClear(GL_COLOR_BUFFER_BIT);
+        // the Depth buffer stores how far away each pixel is
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, door_tex_id);
