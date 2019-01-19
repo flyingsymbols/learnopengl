@@ -91,6 +91,7 @@ int main()
 {
     // glfw: initialize and configure
     // ------------------------------
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -102,7 +103,10 @@ int main()
 
     // glfw window creation
     // --------------------
+    int screenWidth, screenHeight;
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+    glfwGetWindowSize(window, &screenWidth, &screenHeight);
+
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -206,6 +210,20 @@ int main()
     ourShader.setInt("texture2", 1);
     ourShader.setInt("texture3", 2);
 
+    // New stuff for coordinate systems:
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-55.f), glm::vec3(1.f, 0.f, 0.f));
+
+    glm::mat4 view = glm::mat4(1.f);
+    view = glm::translate(view, glm::vec3(0.f,0.f,-3.f));
+
+    glm::mat4 projection;
+    projection = glm::perspective(
+        glm::radians(45.f), 
+        (float) screenWidth / screenHeight,
+        .1f, 100.f
+    );
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -235,34 +253,18 @@ int main()
         // render the rectangle
         glBindVertexArray(VAO);
 
-        {
-            // Make a transformation matrix for our vertex shader
-            // This one rotates around the center
-            glm::mat4 trans = glm::mat4(1.0f);
-            trans = glm::translate(trans, glm::vec3(.5, -.5, 0.));
-            trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(.0,.0,1.));
-            glUniformMatrix4fv(
-                glGetUniformLocation(ourShader.ID, "transform"),
-                1,
-                GL_FALSE,
-                glm::value_ptr(trans)
-            );
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        }
 
-        {
-            glm::mat4 trans = glm::mat4(1.0f);
-            trans = glm::translate(trans, glm::vec3(-.5, .5, 0.));
-            float s = sin(glfwGetTime());
-            trans = glm::scale(trans, glm::vec3(s,s,s));
-            glUniformMatrix4fv(
-                glGetUniformLocation(ourShader.ID, "transform"),
-                1,
-                GL_FALSE,
-                &trans[0][0]
-            );
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-        }
+// for the below to work, need to have the same name in C++ and the shader
+#define SEND_MAT4(mat_name) glUniformMatrix4fv( \
+    glGetUniformLocation(ourShader.ID, #mat_name), \
+    1, GL_FALSE, glm::value_ptr(mat_name) \
+)
+
+        SEND_MAT4(model);
+        SEND_MAT4(view);
+        SEND_MAT4(projection);
+
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------

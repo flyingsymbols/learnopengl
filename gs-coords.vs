@@ -4,9 +4,11 @@ layout (location = 1) in vec2 tex_coords;
 
 out vec2 frag_tex;
 
-uniform mat4 transform;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
 void main() {
-    gl_Position = transform * vec4(pos, 1.0);
+    gl_Position = projection * view * model * vec4(pos, 1.0);
     frag_tex = tex_coords;
 }
