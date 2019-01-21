@@ -2,9 +2,16 @@
  * 1. experiment with FoV and aspect-ration parameters of 
  *    GLM's projection function
  * 2. Play with the view matrix to understand how it's like a camera object
- * 3. Make every 3rd container rotate over time (including the 1st)
  *
  * The easiest of these is 3 because they are all rotating right now
+ * Done:
+ * 3. Make every 3rd container rotate over time (including the 1st)
+ * DH 1. See what happens if we don't clear the depth buffer
+ *   - the black background goes in front of the faces
+ *     - i believe this is because the color is cleared to black, but the
+ *       depth is still there from the previous cube render, so only parts
+ *       of the animation that bring faces of the cube farther than they've
+ *       been before show up as non-black
  */
 #include <iostream>
 #include <cmath>
@@ -256,15 +263,7 @@ int main()
     // glm::mat4 model = glm::mat4(1.0f);
     // model = glm::rotate(model, glm::radians(-55.f), glm::vec3(1.f, 0.f, 0.f));
 
-    glm::mat4 view = glm::mat4(1.f);
-    view = glm::translate(view, glm::vec3(0.f,0.f,-3.f));
 
-    glm::mat4 projection;
-    projection = glm::perspective(
-        glm::radians(45.f), 
-        (float) screenWidth / screenHeight,
-        .1f, 100.f
-    );
 
     glm::vec3 cubePositions[] = {
       glm::vec3( 0.0f,  0.0f,  0.0f), 
@@ -281,7 +280,13 @@ int main()
     
 // for the below to work, need to have the same name in C++ and the shader
 #define SEND_MAT4(mat_name) ourShader.setMat4(#mat_name, mat_name)
-    SEND_MAT4(view);
+
+    glm::mat4 projection;
+    projection = glm::perspective(
+        glm::radians(45.f), 
+        (float) screenWidth / screenHeight,
+        .1f, 100.f
+    );
     SEND_MAT4(projection);
 
     // render loop
@@ -304,7 +309,13 @@ int main()
         // This clears the buffers indicated with a bitmask
         // buffers are COLOR, DEPTH, ACCUM, STENCIL
         // the Depth buffer stores how far away each pixel is
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#define PI 3.14159
+#define PERIODIC(in_s) (sin(glfwGetTime()*2*PI/in_s) > 0.)
+        if (PERIODIC(3.)) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        } else {
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, door_tex_id);
@@ -329,6 +340,17 @@ int main()
 
             // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+        {
+            float x_offset = 0.f;
+            float y_offset = 0.f;
+            float z_offset = -5.f + 3 * sin(glfwGetTime()*2*PI/10.);
+
+            glm::mat4 view = glm::mat4(1.f);
+            view = glm::translate(
+                view, glm::vec3(x_offset, y_offset, z_offset)
+            );
+            SEND_MAT4(view);
         }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
