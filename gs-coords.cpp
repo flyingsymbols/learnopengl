@@ -310,8 +310,9 @@ int main()
         // buffers are COLOR, DEPTH, ACCUM, STENCIL
         // the Depth buffer stores how far away each pixel is
 #define PI 3.14159
-#define PERIODIC(in_s) (sin(glfwGetTime()*2*PI/in_s) > 0.)
-        if (PERIODIC(3.)) {
+#define SINUSOID(in_s) sin(glfwGetTime()*2*PI/in_s)
+        if (1) {
+        // if (SINUSOID(3.) > 0.) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         } else {
             glClear(GL_COLOR_BUFFER_BIT);
