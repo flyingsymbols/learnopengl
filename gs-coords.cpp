@@ -1,10 +1,10 @@
 /* Exercises:
  * 1. experiment with FoV and aspect-ration parameters of 
  *    GLM's projection function
- * 2. Play with the view matrix to understand how it's like a camera object
  *
  * The easiest of these is 3 because they are all rotating right now
  * Done:
+ * 2. Play with the view matrix to understand how it's like a camera object
  * 3. Make every 3rd container rotate over time (including the 1st)
  * DH 1. See what happens if we don't clear the depth buffer
  *   - the black background goes in front of the faces
@@ -343,9 +343,12 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
         {
-            float x_offset = 0.f;
-            float y_offset = 0.f;
-            float z_offset = -5.f + 3 * sin(glfwGetTime()*2*PI/10.);
+            //
+            float x_offset = 4*SINUSOID(7.);
+            // Y = up-down
+            float y_offset = 2.5*SINUSOID(11.);
+            // Z = in-out
+            float z_offset = -5.f + 3 * SINUSOID(5.);
 
             glm::mat4 view = glm::mat4(1.f);
             view = glm::translate(
