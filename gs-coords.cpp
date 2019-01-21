@@ -1,9 +1,9 @@
 /* Exercises:
- * 1. experiment with FoV and aspect-ration parameters of 
- *    GLM's projection function
  *
  * The easiest of these is 3 because they are all rotating right now
  * Done:
+ * 1. experiment with FoV and aspect-ration parameters of 
+ *    GLM's projection function
  * 2. Play with the view matrix to understand how it's like a camera object
  * 3. Make every 3rd container rotate over time (including the 1st)
  * DH 1. See what happens if we don't clear the depth buffer
@@ -281,14 +281,6 @@ int main()
 // for the below to work, need to have the same name in C++ and the shader
 #define SEND_MAT4(mat_name) ourShader.setMat4(#mat_name, mat_name)
 
-    glm::mat4 projection;
-    projection = glm::perspective(
-        glm::radians(45.f), 
-        (float) screenWidth / screenHeight,
-        .1f, 100.f
-    );
-    SEND_MAT4(projection);
-
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -343,7 +335,7 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
         {
-            //
+            // X = left-right
             float x_offset = 4*SINUSOID(7.);
             // Y = up-down
             float y_offset = 2.5*SINUSOID(11.);
@@ -352,10 +344,29 @@ int main()
 
             glm::mat4 view = glm::mat4(1.f);
             view = glm::translate(
-                view, glm::vec3(x_offset, y_offset, z_offset)
+            //    view, glm::vec3(x_offset, y_offset, z_offset)
+            //    fixing this so I can focus on fov and aspect_ratio effects
+                view, glm::vec3(0.,0.,-3.)
             );
             SEND_MAT4(view);
         }
+
+        {
+            // FOV changes are a lot like moving forward and backward
+            float fov_degrees = 45.f+20.f * SINUSOID(9.);
+            // aspect ratio can make it contracted either horizontally
+            // or vertically
+            float aspect_ratio = (float) screenWidth / screenHeight
+                + (0.5 * SINUSOID(15.));
+
+            glm::mat4 projection;
+            projection = glm::perspective(
+                glm::radians(fov_degrees), aspect_ratio,
+                .1f, 100.f
+            );
+            SEND_MAT4(projection);
+        }
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
