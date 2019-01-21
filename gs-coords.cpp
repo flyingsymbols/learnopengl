@@ -1,17 +1,10 @@
 /* Exercises:
- * 1. Make sure ONLY the happy face looks in the reverse direction
- *    by changing the fragment shader
- * 2. Experiment with different texture wrapping methods by 
- *    specifying tex coords in the range [0,2] instead of [0,1]
- *    - see if you can display 4 smiley faces on a single container
- *      image clamped at its edge
- *    - experiment with other wrapping methods as well
- * 3. Display only the center pixels of the texture image on the
- *    rectangle so the individual pixels get visible.
- * 4. Use a uniform variable as the mix function's third parameter
- *    to vary the amount the two textures are visible.
- *    Use up and down arrow keys to change how much the container
- *    or the smiley face is visible
+ * 1. experiment with FoV and aspect-ration parameters of 
+ *    GLM's projection function
+ * 2. Play with the view matrix to understand how it's like a camera object
+ * 3. Make every 3rd container rotate over time (including the 1st)
+ *
+ * The easiest of these is 3 because they are all rotating right now
  */
 #include <iostream>
 #include <cmath>
@@ -325,11 +318,13 @@ int main()
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i + glfwGetTime() * 50.;
-            model = glm::rotate(
-                model, 
-                glm::radians(angle),
-                glm::vec3(1.f, 0.3f, 0.5f)
-            );
+            if (i % 3 == 0) {
+                model = glm::rotate(
+                    model, 
+                    glm::radians(angle),
+                    glm::vec3(1.f, 0.3f, 0.5f)
+                );
+            }
             SEND_MAT4(model);
 
             // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
