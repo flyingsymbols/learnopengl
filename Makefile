@@ -20,10 +20,16 @@ all: gltest.exe glbasic.exe gldraw.exe \
 	gs-textures.exe \
 	gs-tex-exercises.exe \
 	gs-matrices.exe \
-	gs-coords.exe
+	gs-coords.exe \
+	gs-camera.exe
 
 run: all
-	gs-coords.exe
+	gs-camera.exe
+
+gs-camera.exe: gs-camera.cpp stb_image.o glad.o
+	clang++ ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
+
+gs-camera.cpp: gs-camera.vs gs-camera.fs
 
 gs-coords.exe: gs-coords.cpp stb_image.o glad.o
 	clang++ ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
