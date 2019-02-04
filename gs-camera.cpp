@@ -38,6 +38,8 @@ float GLOBAL_K_VAL = 0.5;
 glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+float deltaTime = 0.f; // time between current frame and last frame
+float lastFrame = 0.f; // time of last frame
 
 int load_image(const char * path, 
     unsigned int * out_gl_tex_id, 
@@ -47,48 +49,7 @@ int load_image(const char * path,
     unsigned int t_tex_wrap = GL_REPEAT,
     unsigned int tex_min_filter = GL_LINEAR,
     unsigned int tex_mag_filter = GL_LINEAR
-) {
-    int width, height, channels;
-
-    // flip vertically if necessary
-    stbi_set_flip_vertically_on_load(flip_vertical);
-
-    unsigned char * data = stbi_load(
-        path, 
-        &width, &height, &channels,
-        0 // unused param for desired number of channels
-    );
-
-    if (data) {
-        // TODO: figure out how error handling in opengl 
-        // is supposed to work
-        unsigned int gl_tex_id;
-        glGenTextures(1, &gl_tex_id);
-        glBindTexture(GL_TEXTURE_2D, gl_tex_id);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, s_tex_wrap);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, t_tex_wrap);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tex_min_filter);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tex_mag_filter);
-
-        glTexImage2D(GL_TEXTURE_2D, 
-            0, //mipmap level
-            GL_RGB, // storage format
-            width, height, // width and height of the image
-            0, // legacy?
-            input_channels, GL_UNSIGNED_BYTE, data //input format and data
-        );
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        stbi_image_free(data);
-
-        *out_gl_tex_id = gl_tex_id;
-        return 0;
-    } else {
-        std::cout << "Failed to load texture" << std::endl;
-        return 1;
-    }
-}
+);
 
 int main()
 {
@@ -286,6 +247,9 @@ int main()
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        deltaTime = glfwGetTime() - lastFrame;
+        lastFrame += deltaTime;
+        
         // input
         // -----
         processInput(window);
@@ -356,11 +320,10 @@ int main()
 
         {
             // FOV changes are a lot like moving forward and backward
-            float fov_degrees = 45.f+20.f * SINUSOID(9.);
+            float fov_degrees = 45.f;
             // aspect ratio can make it contracted either horizontally
             // or vertically
-            float aspect_ratio = (float) screenWidth / screenHeight
-                + (0.5 * SINUSOID(15.));
+            float aspect_ratio = (float) screenWidth / screenHeight;
 
             glm::mat4 projection;
             projection = glm::perspective(
@@ -396,7 +359,7 @@ void processInput(GLFWwindow *window)
         glfwSetWindowShouldClose(window, true);
 
     // handle WASD for movement
-    float cameraSpeed = 0.05f; // adjust accordingly
+    float cameraSpeed = 2.5f * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -431,4 +394,55 @@ void key_callback(GLFWwindow * w, int k, int scancode, int action, int mods) {
             break;
     }
     std::cout << GLOBAL_K_VAL << std::endl;
+}
+
+int load_image(const char * path, 
+    unsigned int * out_gl_tex_id, 
+    unsigned int input_channels,
+    bool flip_vertical,
+    unsigned int s_tex_wrap,
+    unsigned int t_tex_wrap,
+    unsigned int tex_min_filter,
+    unsigned int tex_mag_filter
+) {
+    int width, height, channels;
+
+    // flip vertically if necessary
+    stbi_set_flip_vertically_on_load(flip_vertical);
+
+    unsigned char * data = stbi_load(
+        path, 
+        &width, &height, &channels,
+        0 // unused param for desired number of channels
+    );
+
+    if (data) {
+        // TODO: figure out how error handling in opengl 
+        // is supposed to work
+        unsigned int gl_tex_id;
+        glGenTextures(1, &gl_tex_id);
+        glBindTexture(GL_TEXTURE_2D, gl_tex_id);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, s_tex_wrap);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, t_tex_wrap);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, tex_min_filter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, tex_mag_filter);
+
+        glTexImage2D(GL_TEXTURE_2D, 
+            0, //mipmap level
+            GL_RGB, // storage format
+            width, height, // width and height of the image
+            0, // legacy?
+            input_channels, GL_UNSIGNED_BYTE, data //input format and data
+        );
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        stbi_image_free(data);
+
+        *out_gl_tex_id = gl_tex_id;
+        return 0;
+    } else {
+        std::cout << "Failed to load texture" << std::endl;
+        return 1;
+    }
 }

@@ -10,7 +10,7 @@ LIBDIRS := -L${GLFWDIR}/lib-vc2015
 INCDIRS := -I. -I./include -I${GLFWDIR}/include
 CC := clang
 FLAGS := -Xclang -flto-visibility-public-std
-CURRENT_RUN := getting-started-shaders.exe
+CURRENT_RUN := gs-camera.exe
 
 all: gltest.exe glbasic.exe gldraw.exe \
 	gss-ex1.exe \
@@ -24,7 +24,7 @@ all: gltest.exe glbasic.exe gldraw.exe \
 	gs-camera.exe
 
 run: all
-	gs-camera.exe
+	${CURRENT_RUN}
 
 gs-camera.exe: gs-camera.cpp stb_image.o glad.o
 	clang++ ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
