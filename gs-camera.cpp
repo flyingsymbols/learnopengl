@@ -29,6 +29,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow * w, 
     int k, int scancode, int action, int mods);
 void mouse_callback(GLFWwindow * w, double x, double y);
+void scroll_callback(GLFWwindow * w, double x_off, double y_off);
 void processInput(GLFWwindow *window);
 
 // settings
@@ -41,6 +42,8 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 float deltaTime = 0.f; // time between current frame and last frame
 float lastFrame = 0.f; // time of last frame
+
+float fov = 20.0f;
 
 int screenWidth = 800, screenHeight = 600;
 
@@ -87,6 +90,7 @@ int main()
     // capture mouse so that it won't leave window (ESC to leave)
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -326,15 +330,13 @@ int main()
         }
 
         {
-            // FOV changes are a lot like moving forward and backward
-            float fov_degrees = 45.f;
             // aspect ratio can make it contracted either horizontally
             // or vertically
             float aspect_ratio = (float) screenWidth / screenHeight;
 
             glm::mat4 projection;
             projection = glm::perspective(
-                glm::radians(fov_degrees), aspect_ratio,
+                glm::radians(fov), aspect_ratio,
                 .1f, 100.f
             );
             SEND_MAT4(projection);
@@ -435,6 +437,11 @@ void mouse_callback(GLFWwindow * w, double x, double y) {
     front.y = sin(glm::radians(pitch));
     front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(front);
+}
+
+void scroll_callback(GLFWwindow * w, double x_off, double y_off) {
+    fov -= y_off;
+    fov = CLAMP(fov, 1.f, 45.f);
 }
 
 int load_image(const char * path, 
