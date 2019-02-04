@@ -28,6 +28,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow * w, 
     int k, int scancode, int action, int mods);
+void mouse_callback(GLFWwindow * w, double x, double y);
 void processInput(GLFWwindow *window);
 
 // settings
@@ -40,6 +41,8 @@ glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
 float deltaTime = 0.f; // time between current frame and last frame
 float lastFrame = 0.f; // time of last frame
+
+int screenWidth = 800, screenHeight = 600;
 
 int load_image(const char * path, 
     unsigned int * out_gl_tex_id, 
@@ -61,13 +64,13 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
 #endif
 
     // glfw window creation
     // --------------------
-    int screenWidth = 800, screenHeight = 600;
     GLFWwindow* window = glfwCreateWindow(
         screenWidth, screenHeight, "LearnOpenGL", NULL, NULL);
 
@@ -80,6 +83,10 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetKeyCallback(window, key_callback);
+
+    // capture mouse so that it won't leave window (ESC to leave)
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -381,6 +388,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 #define MAX(a, b) ((a > b) ? (a) : (b))
 #define MIN(a, b) ((a < b) ? (a) : (b))
+#define CLAMP(val, lo, high) MIN(MAX(val, lo), high)
 
 void key_callback(GLFWwindow * w, int k, int scancode, int action, int mods) {
     if (action != GLFW_PRESS) return;
@@ -394,6 +402,39 @@ void key_callback(GLFWwindow * w, int k, int scancode, int action, int mods) {
             break;
     }
     std::cout << GLOBAL_K_VAL << std::endl;
+}
+
+float lastX = screenWidth / 2.;
+float lastY = screenHeight / 2.;
+float sensitivity = 0.05f;
+float yaw = 0.f;
+float pitch = 0.f;
+void mouse_callback(GLFWwindow * w, double x, double y) {
+    static bool firstMouse = true;
+    if (firstMouse) {
+        lastX = x;
+        lastY = y;
+        firstMouse = false;
+        printf("x: %.3f, y: %.3f\n", x, y);
+    }
+
+    float x_delta = x - lastX;
+    float y_delta = y - lastY;
+    lastX = x;
+    lastY = y;
+
+    x_delta *= sensitivity;
+    y_delta *= sensitivity;
+
+    yaw += x_delta;
+    pitch += y_delta;
+    pitch = CLAMP(pitch, -89.f, 89.f);
+
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(front);
 }
 
 int load_image(const char * path, 
