@@ -2,19 +2,21 @@
 # $^ all prerequisites
 # $< first prerequisite
 
-.PHONY: all run
+.PHONY: all run clean
 
 GLFWDIR := glfw-3.2.1.bin.WIN64
 LIBS := -lglfw3dll -lglfw3 -lopengl32
 LIBDIRS := -L${GLFWDIR}/lib-vc2015 
 INCDIRS := -I. -I./include -I${GLFWDIR}/include
 CC := clang -v
-FLAGS := -X${CC} -flto-visibility-public-std
+FLAGS := -Xclang -flto-visibility-public-std
 CURRENT_RUN := gs-camera.exe
-CURRENT_RUN := getting-started-shaders.exe
-include Makefile.local
 
-all: gltest.exe glbasic.exe gldraw.exe \
+# This line optionally includes a file with local build rules
+# (include with out - fails, with - it allows the makefile to continue)
+-include Makefile.local
+
+TARGETS := gltest.exe glbasic.exe gldraw.exe \
 	gss-ex1.exe \
 	gss-ex2.exe \
 	gss-test1.exe \
@@ -24,6 +26,14 @@ all: gltest.exe glbasic.exe gldraw.exe \
 	gs-matrices.exe \
 	gs-coords.exe \
 	gs-camera.exe
+
+INTERMEDIATES := stb_image.o glad.o
+
+all: ${TARGETS}
+
+clean:
+	rm ${TARGETS}
+	rm ${INTERMEDIATES}
 
 run: all
 	${CURRENT_RUN}
