@@ -1,17 +1,17 @@
 /* Exercises:
- * 1. Make sure ONLY the happy face looks in the reverse direction
- *    by changing the fragment shader
- * 2. Experiment with different texture wrapping methods by 
- *    specifying tex coords in the range [0,2] instead of [0,1]
- *    - see if you can display 4 smiley faces on a single container
- *      image clamped at its edge
- *    - experiment with other wrapping methods as well
- * 3. Display only the center pixels of the texture image on the
- *    rectangle so the individual pixels get visible.
- * 4. Use a uniform variable as the mix function's third parameter
- *    to vary the amount the two textures are visible.
- *    Use up and down arrow keys to change how much the container
- *    or the smiley face is visible
+ *
+ * The easiest of these is 3 because they are all rotating right now
+ * Done:
+ * 1. experiment with FoV and aspect-ration parameters of 
+ *    GLM's projection function
+ * 2. Play with the view matrix to understand how it's like a camera object
+ * 3. Make every 3rd container rotate over time (including the 1st)
+ * DH 1. See what happens if we don't clear the depth buffer
+ *   - the black background goes in front of the faces
+ *     - i believe this is because the color is cleared to black, but the
+ *       depth is still there from the previous cube render, so only parts
+ *       of the animation that bring faces of the cube farther than they've
+ *       been before show up as non-black
  */
 #include <iostream>
 #include <cmath>
@@ -91,6 +91,7 @@ int main()
 {
     // glfw: initialize and configure
     // ------------------------------
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -102,7 +103,10 @@ int main()
 
     // glfw window creation
     // --------------------
+    int screenWidth, screenHeight;
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+    glfwGetWindowSize(window, &screenWidth, &screenHeight);
+
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -121,18 +125,67 @@ int main()
         return -1;
     }
 
-    Shader ourShader("gs-matrices.vs", "gs-matrices.fs");
+    // GL mode enabling:
+    glEnable(GL_DEPTH_TEST); // this makes OpenGL do depth testing
+        // which makes nearer faces overwrite further ones, but not vice-versa
+
+    Shader ourShader("gs-coords.vs", "gs-coords.fs");
 
     GLOBAL_SHADER = &ourShader;
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
+    /* square: */ /*
     float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+        // positions         // texture coords
+         0.5f,  0.5f, 0.0f,  1.0f, 1.0f,   // top right
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,   // bottom left
+        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f    // top left 
+    }; */
+    /* cube: */
+    float vertices[] = {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
     unsigned int indices[] = {  // note that we start from 0!
         0, 1, 3,   // first triangle
@@ -169,17 +222,14 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     size_t offset = 0;
-    unsigned int stride = (3 + 3 + 2) * sizeof(float);
+    unsigned int stride = (3 + 2) * sizeof(float);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*) offset);
     glEnableVertexAttribArray(0);
     offset += 3 * sizeof(float);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*) offset);
-    glEnableVertexAttribArray(1);
-    offset += 3 * sizeof(float);
 
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, stride, (void *) offset);
-    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void *) offset);
+    glEnableVertexAttribArray(1);
     offset += 2 * sizeof(float);
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
@@ -191,14 +241,8 @@ int main()
     // just bind it beforehand before rendering the respective triangle; this is another approach.
     glBindVertexArray(VAO);
 
-    unsigned int door_tex_id, door2_tex_id, face_tex_id;
+    unsigned int door_tex_id, face_tex_id;
     if (load_image("textures/container.jpg", &door_tex_id, 
-        GL_RGB, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE
-    )){
-        return -1;
-    }
-
-    if (load_image("textures/container.jpg", &door2_tex_id, 
         GL_RGB, false, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST
     )){
         return -1;
@@ -214,6 +258,28 @@ int main()
     ourShader.setInt("texture1", 0);
     ourShader.setInt("texture2", 1);
     ourShader.setInt("texture3", 2);
+
+    // New stuff for coordinate systems:
+    // glm::mat4 model = glm::mat4(1.0f);
+    // model = glm::rotate(model, glm::radians(-55.f), glm::vec3(1.f, 0.f, 0.f));
+
+
+
+    glm::vec3 cubePositions[] = {
+      glm::vec3( 0.0f,  0.0f,  0.0f), 
+      glm::vec3( 2.0f,  5.0f, -15.0f), 
+      glm::vec3(-1.5f, -2.2f, -2.5f),  
+      glm::vec3(-3.8f, -2.0f, -12.3f),  
+      glm::vec3( 2.4f, -0.4f, -3.5f),  
+      glm::vec3(-1.7f,  3.0f, -7.5f),  
+      glm::vec3( 1.3f, -2.0f, -2.5f),  
+      glm::vec3( 1.5f,  2.0f, -2.5f), 
+      glm::vec3( 1.5f,  0.2f, -1.5f), 
+      glm::vec3(-1.3f,  1.0f, -1.5f)  
+    };
+    
+// for the below to work, need to have the same name in C++ and the shader
+#define SEND_MAT4(mat_name) ourShader.setMat4(#mat_name, mat_name)
 
     // render loop
     // -----------
@@ -234,46 +300,73 @@ int main()
 
         // This clears the buffers indicated with a bitmask
         // buffers are COLOR, DEPTH, ACCUM, STENCIL
-        glClear(GL_COLOR_BUFFER_BIT);
+        // the Depth buffer stores how far away each pixel is
+#define PI 3.14159
+#define SINUSOID(in_s) sin(glfwGetTime()*2*PI/in_s)
+        if (1) {
+        // if (SINUSOID(3.) > 0.) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        } else {
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, door_tex_id);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, face_tex_id);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, door2_tex_id);
 
         // render the rectangle
         glBindVertexArray(VAO);
 
+        for (unsigned int i = 0; i < 10; ++i) {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i + glfwGetTime() * 50.;
+            if (i % 3 == 0) {
+                model = glm::rotate(
+                    model, 
+                    glm::radians(angle),
+                    glm::vec3(1.f, 0.3f, 0.5f)
+                );
+            }
+            SEND_MAT4(model);
+
+            // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
         {
-            // Make a transformation matrix for our vertex shader
-            // This one rotates around the center
-            glm::mat4 trans = glm::mat4(1.0f);
-            trans = glm::translate(trans, glm::vec3(.5, -.5, 0.));
-            trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(.0,.0,1.));
-            glUniformMatrix4fv(
-                glGetUniformLocation(ourShader.ID, "transform"),
-                1,
-                GL_FALSE,
-                glm::value_ptr(trans)
+            // X = left-right
+            float x_offset = 4*SINUSOID(7.);
+            // Y = up-down
+            float y_offset = 2.5*SINUSOID(11.);
+            // Z = in-out
+            float z_offset = -5.f + 3 * SINUSOID(5.);
+
+            glm::mat4 view = glm::mat4(1.f);
+            view = glm::translate(
+            //    view, glm::vec3(x_offset, y_offset, z_offset)
+            //    fixing this so I can focus on fov and aspect_ratio effects
+                view, glm::vec3(0.,0.,-3.)
             );
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            SEND_MAT4(view);
         }
 
         {
-            glm::mat4 trans = glm::mat4(1.0f);
-            trans = glm::translate(trans, glm::vec3(-.5, .5, 0.));
-            float s = sin(glfwGetTime());
-            trans = glm::scale(trans, glm::vec3(s,s,s));
-            glUniformMatrix4fv(
-                glGetUniformLocation(ourShader.ID, "transform"),
-                1,
-                GL_FALSE,
-                &trans[0][0]
+            // FOV changes are a lot like moving forward and backward
+            float fov_degrees = 45.f+20.f * SINUSOID(9.);
+            // aspect ratio can make it contracted either horizontally
+            // or vertically
+            float aspect_ratio = (float) screenWidth / screenHeight
+                + (0.5 * SINUSOID(15.));
+
+            glm::mat4 projection;
+            projection = glm::perspective(
+                glm::radians(fov_degrees), aspect_ratio,
+                .1f, 100.f
             );
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            SEND_MAT4(projection);
         }
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
