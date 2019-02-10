@@ -33,13 +33,17 @@ Adding that directory failed at
 C:/Program Files (x86)/Windows Kits/10/Include/10.0.17763.0/um\GL/gl.h:22:10: fatal error: 'winapifamily.h' file not found
 #include <winapifamily.h>
 
-I'm going to try installing Visual Studio to see if that works. There are a lot of options:
+I added in those directories with a Makefile.local, uninstalled and reinstalled clang, then got an error where the program was not executable:
 
-Visual Studio Code
+ "link.exe" -out:gltest.exe -defaultlib:libcmt "-libpath:lib\\amd64" "-libpath:C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.17763.0\\ucrt\\x64" "-libpath:C:\\Program Files (x86)\\Windows Kits\\10\\Lib\\10.0.17763.0\\um\\x64" -libpath:glfw-3.2.1.bin.WIN64/lib-vc2015 -nologo glfw3dll.lib glfw3.lib opengl32.lib "C:\\Users\\David\\AppData\\Local\\Temp\\gltest-06b875.o"
+clang.exe: error: unable to execute command: program not executable
+clang.exe: error: linker command failed with exit code 1 (use -v to see invocation)
+make: *** [gltest.exe] Error 1
 
-Visual Studio IDE:
-Visual Studio Community 2017 
-Visual Studio Professional 2017
-Visual Studio Enterprise 2017
+On my desktop where it's not working:
+$ where link.exe
+C:\Program Files\Git\usr\bin\link.exe
 
-What are the differences here?
+On my laptop where it is working:
+
+
