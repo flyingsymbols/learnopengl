@@ -9,7 +9,7 @@ LIBS := -lglfw3dll -lglfw3 -lopengl32
 LIBDIRS := -L${GLFWDIR}/lib-vc2015 
 INCDIRS := -I. -I./include -I${GLFWDIR}/include
 CC := clang -v
-FLAGS := -Xclang -flto-visibility-public-std
+# FLAGS := -X${CC} -flto-visibility-public-std
 CURRENT_RUN := gs-camera.exe
 
 # This line optionally includes a file with local build rules
