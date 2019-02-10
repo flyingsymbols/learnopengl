@@ -11,6 +11,7 @@ INCDIRS := -I. -I./include -I${GLFWDIR}/include
 CC := clang
 FLAGS := -Xclang -flto-visibility-public-std
 CURRENT_RUN := getting-started-shaders.exe
+include Makefile.local
 
 all: gltest.exe glbasic.exe gldraw.exe \
 	gss-ex1.exe \
