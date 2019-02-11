@@ -8,8 +8,11 @@ GLFWDIR := glfw-3.2.1.bin.WIN64
 LIBS := -lglfw3dll -lglfw3 -lopengl32
 LIBDIRS := -L${GLFWDIR}/lib-vc2015 
 INCDIRS := -I. -I./include -I${GLFWDIR}/include
-CC := clang -v
-# FLAGS := -X${CC} -flto-visibility-public-std
+CC := clang++
+# -v = verbose, allows you to see invocations of subprocesses, e.g. link.exe
+#   default to not included
+# FLAGS := -v -Xclang -flto-visibility-public-std
+FLAGS := -Xclang -flto-visibility-public-std
 CURRENT_RUN := gs-camera.exe
 
 # This line optionally includes a file with local build rules
@@ -32,8 +35,8 @@ INTERMEDIATES := stb_image.o glad.o
 all: ${TARGETS}
 
 clean:
-	rm ${TARGETS}
-	rm ${INTERMEDIATES}
+	-rm ${TARGETS}
+	-rm ${INTERMEDIATES}
 
 run: all
 	${CURRENT_RUN}
@@ -72,13 +75,13 @@ gss-exercises.exe: gss-exercises.cpp glad.o
 gss-test1.exe: gss-test1.cpp glad.o
 	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
 
-gltest.exe: gltest.c
+gltest.exe: gltest.cpp
 	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
 
-glbasic.exe: glbasic.c glad.o
+glbasic.exe: glbasic.cpp glad.o
 	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
 
-gldraw.exe: gldraw.c glad.o
+gldraw.exe: gldraw.cpp glad.o
 	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
 
 gss-ex1.exe: gss-ex1-getting-started-shaders.cpp glad.o
@@ -87,9 +90,9 @@ gss-ex1.exe: gss-ex1-getting-started-shaders.cpp glad.o
 gss-ex2.exe: gss-ex2-getting-started-shaders.cpp glad.o
 	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
 
-glad.o: glad.c
+glad.o: glad.cpp
 	${CC} ${FLAGS} -c -o $@ ${INCDIRS} $^
 
-test.exe: test.c
+test.exe: test.cpp
 	${CC} ${FLAGS} -o $@ $^
 
