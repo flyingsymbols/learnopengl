@@ -52,3 +52,9 @@ C:\Program Files\Git\usr\bin\link.exe
 
 It looks like I had an already-installed visual studio code on this computer. I'm going to try installing visual studio code on the other computer and see if it works
 
+It didn't work, still showing 'link.exe'. I'm not sure how clang is deciding what to use for its linker. i think if I pointed it manually to the
+link.exe, it should work, but I know I didn't do that on my laptop. I'm going to install visual studio community edition to see if that works.
+
+At the screen I just selected Desktop development with C++, which selected a variety of things including the windows 10 SDK.
+
+Installing this worked.
