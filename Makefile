@@ -8,9 +8,10 @@ GLFWDIR := glfw-3.2.1.bin.WIN64
 LIBS := -lglfw3dll -lglfw3 -lopengl32
 LIBDIRS := -L${GLFWDIR}/lib-vc2015 
 INCDIRS := -I. -I./include -I${GLFWDIR}/include
-CC := clang -v
+# CC := clang -v
+CC := clang
 # FLAGS := -X${CC} -flto-visibility-public-std
-CURRENT_RUN := gs-camera.exe
+CURRENT_RUN := lighting-colors.exe
 
 # This line optionally includes a file with local build rules
 # (include with out - fails, with - it allows the makefile to continue)
@@ -25,7 +26,8 @@ TARGETS := gltest.exe glbasic.exe gldraw.exe \
 	gs-tex-exercises.exe \
 	gs-matrices.exe \
 	gs-coords.exe \
-	gs-camera.exe
+	gs-camera.exe \
+	lighting-colors.exe
 
 INTERMEDIATES := stb_image.o glad.o
 
@@ -37,6 +39,11 @@ clean:
 
 run: all
 	${CURRENT_RUN}
+
+lighting-colors.exe: lighting-colors.cpp stb_image.o glad.o
+	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
+
+lighting-colors.cpp: lighting-colors.vs lighting-colors.fs
 
 gs-camera.exe: gs-camera.cpp stb_image.o glad.o
 	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
