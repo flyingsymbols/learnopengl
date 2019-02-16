@@ -40,10 +40,10 @@ clean:
 run: all
 	${CURRENT_RUN}
 
-lighting-colors.exe: lighting-colors.cpp stb_image.o glad.o
+lighting-colors.exe: lighting-colors.cpp glad.o
 	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
 
-lighting-colors.cpp: lighting-colors.vs lighting-colors.fs
+lighting-colors.cpp: projection-model-view.vs lighting-colors.fs lighting-colors-lamp.fs
 
 gs-camera.exe: gs-camera.cpp stb_image.o glad.o
 	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
