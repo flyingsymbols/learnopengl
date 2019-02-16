@@ -31,7 +31,10 @@ void processInput(GLFWwindow *window); // updates camera global position
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-Camera camera(glm::vec3(0.f, 0.f, 3.f));
+// +x = right
+// +y = up
+// +z = out of the window
+Camera camera(glm::vec3(1.23f, 1.45f, 3.16f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -46,6 +49,11 @@ glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 // returns NULL on failure, otherwise returns window pointer
 int main()
 {
+    // Point the camera to down and slightly left
+    camera.Pitch -= 23.2f;
+    camera.Yaw  -= 11.8f;
+    camera.updateCameraVectors();
+
 	GLFWwindow * window = setup_GLFW_window();
 
     Shader lightingShader("projection-model-view.vs", "lighting-basic.fs");

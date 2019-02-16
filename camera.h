@@ -84,6 +84,8 @@ public:
             Position += Up * velocity;
         if (direction == DOWN)
             Position -= Up * velocity;
+
+        // printf("{%0.2f,%0.2f,%0.2f,P:%0.2f,Y:%0.2f}\n", Position.x, Position.y, Position.z, Pitch, Yaw);
     }
 
     // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
@@ -119,7 +121,6 @@ public:
             Zoom = 45.0f;
     }
 
-private:
     // Calculates the front vector from the Camera's (updated) Euler Angles
     void updateCameraVectors()
     {
