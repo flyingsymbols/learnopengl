@@ -56,54 +56,62 @@ int main()
 
 	GLFWwindow * window = setup_GLFW_window();
 
-    Shader lightingShader("projection-model-view.vs", "lighting-basic.fs");
+    Shader lightingShader("lighting-basic.vs", "lighting-basic.fs");
     Shader lampShader("projection-model-view.vs", "lighting-colors-lamp.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
+
     /* cube: */
+    // pos.x, pos.y, pos.z, norm.x, norm.y, norm.z
     float vertices[] = {
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
+        // back face
+        -0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f,
+         0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f,
+         0.5f,  0.5f, -0.5f, 0.f, 0.f, -1.f,
+         0.5f,  0.5f, -0.5f, 0.f, 0.f, -1.f,
+        -0.5f,  0.5f, -0.5f, 0.f, 0.f, -1.f,
+        -0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f,
 
-        -0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
+        // front face
+        -0.5f, -0.5f,  0.5f, 0.f, 0.f, 1.f,
+         0.5f, -0.5f,  0.5f, 0.f, 0.f, 1.f,
+         0.5f,  0.5f,  0.5f, 0.f, 0.f, 1.f,
+         0.5f,  0.5f,  0.5f, 0.f, 0.f, 1.f,
+        -0.5f,  0.5f,  0.5f, 0.f, 0.f, 1.f,
+        -0.5f, -0.5f,  0.5f, 0.f, 0.f, 1.f,
 
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
+        // left face
+        -0.5f,  0.5f,  0.5f, -1.f, 0.f, 0.f,
+        -0.5f,  0.5f, -0.5f, -1.f, 0.f, 0.f,
+        -0.5f, -0.5f, -0.5f, -1.f, 0.f, 0.f,
+        -0.5f, -0.5f, -0.5f, -1.f, 0.f, 0.f,
+        -0.5f, -0.5f,  0.5f, -1.f, 0.f, 0.f,
+        -0.5f,  0.5f,  0.5f, -1.f, 0.f, 0.f,
 
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
+        // right face
+         0.5f,  0.5f,  0.5f, 1.f, 0.f, 0.f,
+         0.5f,  0.5f, -0.5f, 1.f, 0.f, 0.f,
+         0.5f, -0.5f, -0.5f, 1.f, 0.f, 0.f,
+         0.5f, -0.5f, -0.5f, 1.f, 0.f, 0.f,
+         0.5f, -0.5f,  0.5f, 1.f, 0.f, 0.f,
+         0.5f,  0.5f,  0.5f, 1.f, 0.f, 0.f,
 
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,
+        // bottom face
+        -0.5f, -0.5f, -0.5f, 0.f, -1.f, 0.f, 
+         0.5f, -0.5f, -0.5f, 0.f, -1.f, 0.f,
+         0.5f, -0.5f,  0.5f, 0.f, -1.f, 0.f,
+         0.5f, -0.5f,  0.5f, 0.f, -1.f, 0.f,
+        -0.5f, -0.5f,  0.5f, 0.f, -1.f, 0.f,
+        -0.5f, -0.5f, -0.5f, 0.f, -1.f, 0.f,
 
-        -0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
+        // top face
+        -0.5f,  0.5f, -0.5f, 0.f, 1.f, 0.f,
+         0.5f,  0.5f, -0.5f, 0.f, 1.f, 0.f,
+         0.5f,  0.5f,  0.5f, 0.f, 1.f, 0.f,
+         0.5f,  0.5f,  0.5f, 0.f, 1.f, 0.f,
+        -0.5f,  0.5f,  0.5f, 0.f, 1.f, 0.f,
+        -0.5f,  0.5f, -0.5f, 0.f, 1.f, 0.f,
     };
 
     // What's the relation between the following three things:
@@ -126,14 +134,16 @@ int main()
     glGenVertexArrays(1, &cubeVAO);
 	glBindVertexArray(cubeVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); //already bound, but demonstrating complete usage
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glEnableVertexAttribArray(1);
 
 	unsigned int lightVAO;
     glGenVertexArrays(1, &lightVAO);
 	glBindVertexArray(lightVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); //already bound, but demonstrating complete usage
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
     
@@ -178,6 +188,7 @@ int main()
 		lightingShader.use();
 		lightingShader.setVec3("objectColor", 1.f, .5f, .31f);
 		lightingShader.setVec3("lightColor", 1.f, 1.f, 1.f);
+        lightingShader.setVec3("lightPos", lightPos);
 		lightingShader.setMat4("projection", projection);
 		lightingShader.setMat4("view", view);
 		lightingShader.setMat4("model", cube_model);
