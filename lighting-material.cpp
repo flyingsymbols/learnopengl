@@ -175,13 +175,18 @@ int main()
 
 		// activate lighting shader
 		lightingShader.use();
-		lightingShader.setVec3("objectColor", 1.f, .5f, .31f);
 		lightingShader.setVec3("lightColor", 1.f, 1.f, 1.f);
         lightingShader.setVec3("lightPos", lightPos);
         lightingShader.setVec3("viewPos", camera.Position);
 		lightingShader.setMat4("projection", projection);
 		lightingShader.setMat4("view", view);
 		lightingShader.setMat4("model", cube_model);
+
+        //set shader material struct
+        lightingShader.setVec3("material.ambient", 1.0f, .5f, .31f);
+        lightingShader.setVec3("material.diffuse", 1.f, .5f, .31f);
+        lightingShader.setVec3("material.specular", .5f, .5f, .5f);
+        lightingShader.setFloat("material.shininess", 32.f);
 
 		// render cube
 		glBindVertexArray(cubeVAO);
