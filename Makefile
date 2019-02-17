@@ -13,7 +13,7 @@ CC := clang++
 #   default to not included
 # FLAGS := -v -Xclang -flto-visibility-public-std
 FLAGS := -Xclang -flto-visibility-public-std
-CURRENT_RUN := lighting-basic.exe
+CURRENT_RUN := lighting-material.exe
 
 # This line optionally includes a file with local build rules
 # (include with out - fails, with - it allows the makefile to continue)
@@ -30,7 +30,8 @@ TARGETS := gltest.exe glbasic.exe gldraw.exe \
 	gs-coords.exe \
 	gs-camera.exe \
 	lighting-colors.exe \
-	lighting-basic.exe
+	lighting-basic.exe \
+	lighting-material.exe
 
 INTERMEDIATES := stb_image.o glad.o
 
@@ -43,10 +44,15 @@ clean:
 run: all
 	${CURRENT_RUN}
 
+lighting-material.exe: lighting-material.cpp glad.o
+	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
+
+lighting-material.cpp: projection-model-view.vs lighting-material.vs lighting-material.fs
+
 lighting-basic.exe: lighting-basic.cpp glad.o
 	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
 
-lighting-basic.cpp: projection-model-view.vs lighting-basic.fs
+lighting-basic.cpp: projection-model-view.vs lighting-basic.vs lighting-basic.fs
 
 lighting-colors.exe: lighting-colors.cpp glad.o
 	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
