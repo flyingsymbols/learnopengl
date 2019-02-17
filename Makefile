@@ -45,7 +45,7 @@ clean:
 run: all
 	${CURRENT_RUN}
 
-lighting-map.exe: lighting-map.cpp glad.o
+lighting-map.exe: lighting-map.cpp stb_image.o glad.o
 	${CC} ${FLAGS} -o $@ ${LIBS} ${LIBDIRS} ${INCDIRS} $^
 
 lighting-map.cpp: projection-model-view.vs lighting-map.vs lighting-map.fs

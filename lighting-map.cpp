@@ -7,12 +7,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <stb_image.h>
 
 #include "shader.h"
 #include "camera.h"
 
 GLFWwindow * setup_GLFW_window();
 void processInput(GLFWwindow *window); // updates camera global position
+int loadTexture(const char *path, unsigned int * out_tex_id); // function from tutorial
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -127,9 +129,15 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-    
-// for the below to work, need to have the same name in C++ and the shader
-#define SEND_MAT4(mat_name) ourShader.setMat4(#mat_name, mat_name)
+    unsigned int diffuse_tex_id;
+    if (loadTexture("textures/container2.png", &diffuse_tex_id)) {
+        return -1;
+    }
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, diffuse_tex_id);
+    lightingShader.use();
+    lightingShader.setInt("material.diffuse", 0);
 
     // render loop
     // -----------
@@ -177,19 +185,17 @@ int main()
 		lightingShader.setMat4("model", cube_model);
 
         //set shader material struct
-        lightingShader.setVec3("material.ambient", 1.0f, .5f, .31f);
-        lightingShader.setVec3("material.diffuse", 1.f, .5f, .31f);
         lightingShader.setVec3("material.specular", .5f, .5f, .5f);
-        lightingShader.setFloat("material.shininess", 32.f);
+        lightingShader.setFloat("material.shininess", 64.f);
 
         //set shader light struct
-        glm::vec3 lightColor(sin(t * 2.f), sin(t * .7f), sin(t * 1.3f));
-        glm::vec3 diffuseColor = lightColor * glm::vec3(.5f);
-        glm::vec3 ambientColor = diffuseColor * glm::vec3(.2f);
+        glm::vec3 ambientColor(.2f);
+        glm::vec3 diffuseColor(.5f);
+        glm::vec3 specularColor(1.f);
 
 		lightingShader.setVec3("light.ambient", ambientColor);
         lightingShader.setVec3("light.diffuse", diffuseColor);
-        lightingShader.setVec3("light.specular", 1.f, 1.f, 1.f);
+        lightingShader.setVec3("light.specular", specularColor);
         lightingShader.setVec3("light.position", lightPos);
 
 		// render cube
@@ -324,4 +330,45 @@ Exit:
 		glfwTerminate();
 	}
 	return window;
+}
+
+int loadTexture(char const * path, unsigned int * out_tex_id)
+{
+    // returns -1 on error, 0 on success
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    
+    int width, height, nrComponents;
+    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3)
+            format = GL_RGB;
+        else if (nrComponents == 4)
+            format = GL_RGBA;
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        printf("here\n");
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+        return -1;
+    }
+
+    *out_tex_id = textureID;
+    return 0;
 }
