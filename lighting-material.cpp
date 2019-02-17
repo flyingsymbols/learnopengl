@@ -187,8 +187,12 @@ int main()
         lightingShader.setFloat("material.shininess", 32.f);
 
         //set shader light struct
-		lightingShader.setVec3("light.ambient", .2f, .2f, .2f);
-        lightingShader.setVec3("light.diffuse", .5f, .5f, .5f);
+        glm::vec3 lightColor(sin(t * 2.f), sin(t * .7f), sin(t * 1.3f));
+        glm::vec3 diffuseColor = lightColor * glm::vec3(.5f);
+        glm::vec3 ambientColor = diffuseColor * glm::vec3(.2f);
+
+		lightingShader.setVec3("light.ambient", ambientColor);
+        lightingShader.setVec3("light.diffuse", diffuseColor);
         lightingShader.setVec3("light.specular", 1.f, 1.f, 1.f);
         lightingShader.setVec3("light.position", lightPos);
 
