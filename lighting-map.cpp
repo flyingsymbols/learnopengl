@@ -48,55 +48,49 @@ int main()
     // ------------------------------------------------------------------
 
     /* cube: */
-    // pos.x, pos.y, pos.z, norm.x, norm.y, norm.z
     float vertices[] = {
-        // back face
-        -0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f,
-         0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f,
-         0.5f,  0.5f, -0.5f, 0.f, 0.f, -1.f,
-         0.5f,  0.5f, -0.5f, 0.f, 0.f, -1.f,
-        -0.5f,  0.5f, -0.5f, 0.f, 0.f, -1.f,
-        -0.5f, -0.5f, -0.5f, 0.f, 0.f, -1.f,
+        // positions          // normals           // texture coords
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
 
-        // front face
-        -0.5f, -0.5f,  0.5f, 0.f, 0.f, 1.f,
-         0.5f, -0.5f,  0.5f, 0.f, 0.f, 1.f,
-         0.5f,  0.5f,  0.5f, 0.f, 0.f, 1.f,
-         0.5f,  0.5f,  0.5f, 0.f, 0.f, 1.f,
-        -0.5f,  0.5f,  0.5f, 0.f, 0.f, 1.f,
-        -0.5f, -0.5f,  0.5f, 0.f, 0.f, 1.f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
 
-        // left face
-        -0.5f,  0.5f,  0.5f, -1.f, 0.f, 0.f,
-        -0.5f,  0.5f, -0.5f, -1.f, 0.f, 0.f,
-        -0.5f, -0.5f, -0.5f, -1.f, 0.f, 0.f,
-        -0.5f, -0.5f, -0.5f, -1.f, 0.f, 0.f,
-        -0.5f, -0.5f,  0.5f, -1.f, 0.f, 0.f,
-        -0.5f,  0.5f,  0.5f, -1.f, 0.f, 0.f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-        // right face
-         0.5f,  0.5f,  0.5f, 1.f, 0.f, 0.f,
-         0.5f,  0.5f, -0.5f, 1.f, 0.f, 0.f,
-         0.5f, -0.5f, -0.5f, 1.f, 0.f, 0.f,
-         0.5f, -0.5f, -0.5f, 1.f, 0.f, 0.f,
-         0.5f, -0.5f,  0.5f, 1.f, 0.f, 0.f,
-         0.5f,  0.5f,  0.5f, 1.f, 0.f, 0.f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-        // bottom face
-        -0.5f, -0.5f, -0.5f, 0.f, -1.f, 0.f, 
-         0.5f, -0.5f, -0.5f, 0.f, -1.f, 0.f,
-         0.5f, -0.5f,  0.5f, 0.f, -1.f, 0.f,
-         0.5f, -0.5f,  0.5f, 0.f, -1.f, 0.f,
-        -0.5f, -0.5f,  0.5f, 0.f, -1.f, 0.f,
-        -0.5f, -0.5f, -0.5f, 0.f, -1.f, 0.f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
 
-        // top face
-        -0.5f,  0.5f, -0.5f, 0.f, 1.f, 0.f,
-         0.5f,  0.5f, -0.5f, 0.f, 1.f, 0.f,
-         0.5f,  0.5f,  0.5f, 0.f, 1.f, 0.f,
-         0.5f,  0.5f,  0.5f, 0.f, 1.f, 0.f,
-        -0.5f,  0.5f,  0.5f, 0.f, 1.f, 0.f,
-        -0.5f,  0.5f, -0.5f, 0.f, 1.f, 0.f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
     };
 
     // What's the relation between the following three things:
@@ -119,16 +113,18 @@ int main()
     glGenVertexArrays(1, &cubeVAO);
 	glBindVertexArray(cubeVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); //already bound, but demonstrating complete usage
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(3*sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(3*sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(6*sizeof(float)));
+    glEnableVertexAttribArray(2);
 
 	unsigned int lightVAO;
     glGenVertexArrays(1, &lightVAO);
 	glBindVertexArray(lightVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); //already bound, but demonstrating complete usage
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
     

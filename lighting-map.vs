@@ -1,6 +1,7 @@
 #version 330 core
 layout (location = 0) in vec3 vx_pos;
 layout (location = 1) in vec3 vx_norm;
+layout (location = 2) in vec2 vx_tex;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -8,6 +9,7 @@ uniform mat4 projection;
 
 out vec3 Normal;
 out vec3 FragPos;
+out vec2 TexCoords;
 
 void main() {
     gl_Position = projection * view * model * vec4(vx_pos, 1.0);
@@ -20,4 +22,6 @@ void main() {
     // want to calculate the normal matrix on the CPU and send it to the 
     // shaders via a uniform before drawing (just like the model matrix).
     Normal = mat3(transpose(inverse(model))) * vx_norm;
+
+    TexCoords = vx_tex;
 }
