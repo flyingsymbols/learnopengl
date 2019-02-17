@@ -1,17 +1,9 @@
 /* Exercises:
  *
- * The easiest of these is 3 because they are all rotating right now
- * Done:
- * 1. experiment with FoV and aspect-ration parameters of 
- *    GLM's projection function
- * 2. Play with the view matrix to understand how it's like a camera object
- * 3. Make every 3rd container rotate over time (including the 1st)
- * DH 1. See what happens if we don't clear the depth buffer
- *   - the black background goes in front of the faces
- *     - i believe this is because the color is cleared to black, but the
- *       depth is still there from the previous cube render, so only parts
- *       of the animation that bring faces of the cube farther than they've
- *       been before show up as non-black
+ * 1. make the light source move (done)
+ * 2. play with the strengths of ambient, diffuse and specular, as well as shininess (not doing this right now)
+ * 3. do phong shading in view space instead of world space (not doing this right now)
+ * 4. implement gouraud shading by doing the lighting calc in the vertex shader (not doing this right now)
  */
 #include <iostream>
 #include <cmath>
@@ -174,6 +166,10 @@ int main()
         // buffers are COLOR, DEPTH, ACCUM, STENCIL
         // the Depth buffer stores how far away each pixel is
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        float t = glfwGetTime();
+        lightPos.x = 1.f + sin(t) * 2.f;
+        lightPos.y = sin(t / 2.f);
 
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, .1f, 100.f);
 		glm::mat4 view = camera.GetViewMatrix();
