@@ -139,15 +139,24 @@ int main()
         return -1;
     }
 
+    unsigned int emission_tex_id;
+    if (loadTexture("textures/matrix.jpg", &emission_tex_id)) {
+        return -1;
+    }
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, diffuse_tex_id);
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, specular_tex_id);
 
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, emission_tex_id);
+
     lightingShader.use();
     lightingShader.setInt("material.diffuse", 0);
     lightingShader.setInt("material.specular", 1);
+    lightingShader.setInt("material.emission", 2);
 
     // render loop
     // -----------
